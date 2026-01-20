@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<base href="https://cdn.jsdelivr.net/gh/genizy/web-port@master/yandere-simulator/">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>YandereSimulator</title>
+    <script src="Build/UnityLoader.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+
+        #unityContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+        }
+
+        #unityContainer canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        #loading-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 48px;
+            font-family: cursive;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        let max = 0,
+            done = 0;
+
+        function mergeFiles(fileParts) {
+            return new Promise((resolve, reject) => {
+                const buffers = [];
+                const fetchPart = (index) => {
+                    if (index >= fileParts.length) {
+                        const blob = new Blob(buffers);
+                        resolve(URL.createObjectURL(blob));
+                        return;
+                    }
+                    fetch(fileParts[index])
+                        .then(r => r.arrayBuffer())
+                        .then(b => {
+                            buffers.push(b);
+                            done++;
+                            document.querySelector("#loading-text").textContent = `LOADING... (${done}/${max})`;
+                            fetchPart(index + 1);
+                        })
+                        .catch(reject);
+                };
+                fetchPart(0);
+            });
+        }
+
+        function getParts(file, start, end) {
+            const parts = [];
+            for (let i = start; i <= end; i++) parts.push(`${file}.part${i}`);
+            max += end;
+            return parts;
+        }
+
+        Promise.all([
+            mergeFiles(getParts("Build/YandereSim.data.unityweb", 1, 5)),
+        ]).then(([dataUrl]) => {
+            const json = {
+                companyName: "YandereDev",
+                productName: "YandereSimulator",
+                dataUrl: dataUrl,
+                wasmCodeUrl: "YandereSim.wasm.code.unityweb",
+                wasmFrameworkUrl: "YandereSim.wasm.framework.unityweb",
+                TOTAL_MEMORY: 268435456,
+                graphicsAPI: ["WebGL 2.0", "WebGL 1.0"],
+                webglContextAttributes: {
+                    preserveDrawingBuffer: false
+                },
+                splashScreenStyle: "Dark",
+                backgroundColor: "#000000",
+                cacheControl: {
+                    default: "must-revalidate"
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(json)], {
+                type: "application/json"
+            });
+            const blobUrl = URL.createObjectURL(blob);
+
+            const gameInstance = UnityLoader.instantiate("unityContainer", json, {
+                url: blobUrl,
+                Module: {
+                    onRuntimeInitialized: () => {
+                        const loadingText = document.querySelector("#loading-text");
+                        if (loadingText) loadingText.remove();
+                    },
+                },
+            });
+
+            const resize = () => {
+                const container = document.getElementById("unityContainer");
+                container.style.width = window.innerWidth + "px";
+                container.style.height = window.innerHeight + "px";
+            };
+            window.addEventListener("resize", resize);
+            resize();
+        });
+    </script>
+</head>
+
+<body>
+    <div id="loading-text" style="
+					color: white;
+					font-size: 48px;
+					font-family: 'Comic Sans MS', cursive;
+					text-align: center;
+					margin-top: 20px;
+				">
+        LOADING...
+    </div>LOADING...</div>
+    <div id="unityContainer"></div>
+
+    <!-- Downloaded From Noah's Tutoring Hub -->
+    <script>
+        console.log('%c🔄 Loading game downloaded from Noah\'s Tutoring Hub', 'color: #c27c15; font-weight: bold;');
+    </script>
+    
+    <div id="noahs-watermark" 
+         onclick="window.open('https://noahs-calculus-tutor.pages.dev/', '_blank'); this.style.transform='scale(0.95)'; setTimeout(() => this.style.transform='scale(1)', 100);"
+         ontouchstart="this.style.opacity='0.7';"
+         ontouchend="this.style.opacity='0.9'; setTimeout(() => window.open('https://noahs-calculus-tutor.pages.dev/', '_blank'), 100);"
+         style="
+            all: initial !important;
+            position: fixed !important;
+            bottom: 10px !important;
+            right: 10px !important;
+            background: rgba(0, 0, 0, 0.85) !important;
+            color: #c27c15 !important;
+            padding: 8px 12px !important;
+            border-radius: 5px !important;
+            font-family: 'Courier New', monospace !important;
+            font-size: 12px !important;
+            z-index: 2147483647 !important;
+            border: 1px solid #c27c15 !important;
+            opacity: 0.9 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            backdrop-filter: blur(4px) !important;
+            box-shadow: 0 0 15px rgba(194, 124, 21, 0.4) !important;
+            transition: opacity 0.2s, transform 0.1s !important;
+            user-select: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        ">
+        <img src="https://raw.githubusercontent.com/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/master/cuh.png" 
+             alt="Noah's Tutoring Hub" 
+             style="width: 16px !important; height: 16px !important; border-radius: 3px !important; pointer-events: none !important;"
+             onerror="this.style.display='none'">
+        <span style="pointer-events: none !important;">Downloaded from Noah's Tutoring Hub</span>
+    </div>
+
+    <script>
+        (function() {
+            var gameTitle = "Yandere Simulator";
+
+            function createWatermark() {
+                const watermark = document.createElement('div');
+                watermark.id = 'noahs-watermark';
+  
+                const logo = document.createElement('img');
+                logo.src = 'https:
+                logo.alt = "Noah's Tutoring Hub";
+                logo.style.cssText = 'width: 16px !important; height: 16px !important; border-radius: 3px !important; display: block !important; pointer-events: none !important;';
+
+                const text = document.createElement('span');
+                text.textContent = 'Downloaded from Noah\'s Tutoring Hub';
+                text.style.cssText = 'pointer-events: none !important;';
+
+                watermark.appendChild(logo);
+                watermark.appendChild(text);
+
+                watermark.setAttribute('style', 
+                    'all: initial !important;' +
+                    'position: fixed !important;' +
+                    'bottom: 10px !important;' +
+                    'right: 10px !important;' +
+                    'background: rgba(0, 0, 0, 0.85) !important;' +
+                    'color: #c27c15 !important;' +
+                    'padding: 8px 12px !important;' +
+                    'border-radius: 5px !important;' +
+                    'font-family: \'Courier New\', monospace !important;' +
+                    'font-size: 12px !important;' +
+                    'z-index: 2147483647 !important;' +
+                    'border: 1px solid #c27c15 !important;' +
+                    'opacity: 0.9 !important;' +
+                    'pointer-events: auto !important;' +
+                    'cursor: pointer !important;' +
+                    'display: flex !important;' +
+                    'align-items: center !important;' +
+                    'gap: 8px !important;' +
+                    'backdrop-filter: blur(4px) !important;' +
+                    'box-shadow: 0 0 15px rgba(194, 124, 21, 0.4) !important;' +
+                    'transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s, border-color 0.2s !important;' +
+                    'user-select: none !important;' +
+                    '-webkit-tap-highlight-color: transparent !important;'
+                );
+
+                logo.onerror = function() {
+                    this.style.display = 'none';
+                    watermark.setAttribute('style', watermark.getAttribute('style') + 'padding-left: 12px !important;');
+                };
+
+                watermark.setAttribute('role', 'button');
+                watermark.setAttribute('aria-label', 'Visit Noah\'s Tutoring Hub website');
+                watermark.setAttribute('tabindex', '0');
+
+                watermark.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    this.style.transform = 'scale(0.95) !important';
+                    this.style.transition = 'transform 0.1s !important';
+                    
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1) !important';
+                        window.open('https://noahs-calculus-tutor.pages.dev/', '_blank');
+                    }, 100);
+                });
+
+                watermark.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.style.opacity = '0.7 !important';
+                });
+                
+                watermark.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.style.opacity = '0.9 !important';
+
+                    this.style.transform = 'scale(0.95) !important';
+                    
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1) !important';
+                        window.open('https://noahs-calculus-tutor.pages.dev/', '_blank');
+                    }, 100);
+                });
+
+                watermark.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        window.open('https://noahs-calculus-tutor.pages.dev/', '_blank');
+                    }
+                });
+
+                watermark.addEventListener('mouseenter', function() {
+                    this.style.opacity = '1 !important';
+                    this.style.transform = 'translateY(-2px) !important';
+                    this.style.boxShadow = '0 0 25px rgba(194, 124, 21, 0.8) !important';
+                    this.style.borderColor = '#e69500 !important';
+                });
+                
+                watermark.addEventListener('mouseleave', function() {
+                    this.style.opacity = '0.9 !important';
+                    this.style.transform = 'translateY(0) !important';
+                    this.style.boxShadow = '0 0 15px rgba(194, 124, 21, 0.4) !important';
+                    this.style.borderColor = '#c27c15 !important';
+                });
+
+                watermark.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                return watermark;
+            }
+
+            function addWatermark() {
+                const existing = document.getElementById('noahs-watermark');
+                if (!existing) {
+                    document.body.appendChild(createWatermark());
+                }
+            }
+
+            function protectWatermark() {
+                addWatermark();
+
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.removedNodes) {
+                            Array.from(mutation.removedNodes).forEach(function(node) {
+                                if (node.id === 'noahs-watermark' || 
+                                    (node.querySelector && node.querySelector('#noahs-watermark'))) {
+                                    setTimeout(addWatermark, 100);
+                                }
+                            });
+                        }
+                    });
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+
+                setInterval(addWatermark, 5000);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', protectWatermark);
+            } else {
+                protectWatermark();
+            }
+
+            console.log('%c🎮 Game: "' + gameTitle + '", Downloaded from Noah\'s Tutoring Hub', 
+                'color: #c27c15; font-weight: bold; font-size: 14px;');
+            console.log('%c📚 Visit https:
+                'color: #e69500;');
+        })();
+    </script>
+</body>
+
+</html>
